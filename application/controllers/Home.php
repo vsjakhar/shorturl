@@ -80,12 +80,18 @@ class Home extends CI_Controller {
 		$check = $this->Cprez->default_select_row('shorturl','*',array('shorturl'=>$url));
 		// print_r($check);
 		if($check){
+			$this->load->library('user_agent');
+			// echo $this->agent->mobile(); // die;
+			// echo $this->input->ip_address().'|'.$this->agent->browser().'|'.$this->agent->platform();
+			// echo "<pre>"; print_r($this->agent); echo "</pre>";
+			// die();
 			$this->Cprez->default_update($table='shorturl',array('views'=>$check['views']+1),array('shorturl'=>$url));
+			$this->Cprez->default_insert($table='history',$data=array("shorturl_id"=>$check['id'],"ip"=>$this->input->ip_address(),"browser"=>$this->agent->browser(),"version"=>$this->agent->version(),"platform"=>$this->agent->platform(), "mobile"=>$this->agent->mobile(), "robot"=>$this->agent->robot(), "referer"=>$this->agent->referrer()));
 			redirect($check['url'],'location',301);
 			exit();
 		}
-		echo "string ".$url;
-		// redirect(base_url(uri_string()));
+		// echo "string ".$url;
+		redirect(base_url(uri_string()));
 		// redirect('http://localhost/php/shorturl3/home/test/abc','location',301);
 		// exit();
 	}

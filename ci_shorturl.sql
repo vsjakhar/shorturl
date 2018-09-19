@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 19, 2018 at 05:38 AM
+-- Generation Time: Sep 19, 2018 at 09:27 AM
 -- Server version: 5.7.21
 -- PHP Version: 7.1.16
 
@@ -21,6 +21,27 @@ SET time_zone = "+00:00";
 --
 -- Database: `ci_shorturl`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `history`
+--
+
+DROP TABLE IF EXISTS `history`;
+CREATE TABLE `history` (
+  `id` int(11) NOT NULL,
+  `shorturl_id` int(11) NOT NULL,
+  `ip` varchar(22) COLLATE utf8_unicode_ci NOT NULL,
+  `browser` varchar(55) COLLATE utf8_unicode_ci NOT NULL,
+  `version` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  `platform` varchar(55) COLLATE utf8_unicode_ci NOT NULL,
+  `mobile` tinyint(1) NOT NULL,
+  `robot` tinyint(1) NOT NULL,
+  `referer` text COLLATE utf8_unicode_ci NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` enum('Active','Inactive','Delete') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -55,6 +76,7 @@ CREATE TABLE `user` (
   `user_email` varchar(55) COLLATE utf8_unicode_ci NOT NULL,
   `user_mobile` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   `user_website` varchar(55) COLLATE utf8_unicode_ci NOT NULL,
+  `user_authkey` varchar(55) COLLATE utf8_unicode_ci NOT NULL,
   `user_password` varchar(55) COLLATE utf8_unicode_ci NOT NULL,
   `user_last_password` varchar(55) COLLATE utf8_unicode_ci NOT NULL,
   `user_registration_date` varchar(55) COLLATE utf8_unicode_ci NOT NULL,
@@ -67,6 +89,12 @@ CREATE TABLE `user` (
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `history`
+--
+ALTER TABLE `history`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `shorturl`
@@ -83,6 +111,12 @@ ALTER TABLE `user`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `history`
+--
+ALTER TABLE `history`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `shorturl`
