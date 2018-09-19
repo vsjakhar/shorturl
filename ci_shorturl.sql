@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 19, 2018 at 02:55 AM
+-- Generation Time: Sep 19, 2018 at 05:38 AM
 -- Server version: 5.7.21
 -- PHP Version: 7.1.16
 
@@ -21,6 +21,25 @@ SET time_zone = "+00:00";
 --
 -- Database: `ci_shorturl`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shorturl`
+--
+
+DROP TABLE IF EXISTS `shorturl`;
+CREATE TABLE `shorturl` (
+  `id` int(11) NOT NULL,
+  `url` varchar(155) COLLATE utf8_unicode_ci NOT NULL,
+  `shorturl` varchar(55) COLLATE utf8_unicode_ci NOT NULL,
+  `views` int(11) NOT NULL,
+  `user` int(11) NOT NULL,
+  `way` enum('WEB','API') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'WEB',
+  `info` text COLLATE utf8_unicode_ci NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` enum('Active','Inactive','Delete') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -50,6 +69,12 @@ CREATE TABLE `user` (
 --
 
 --
+-- Indexes for table `shorturl`
+--
+ALTER TABLE `shorturl`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
@@ -58,6 +83,12 @@ ALTER TABLE `user`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `shorturl`
+--
+ALTER TABLE `shorturl`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `user`
