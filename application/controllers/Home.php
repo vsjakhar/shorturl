@@ -44,16 +44,48 @@ class Home extends CI_Controller {
 	}
 
 	public function dashboard(){
+		$data['error'] = "";
 		$data['list']= $this->Cprez->default_select_and('shorturl','*',array('status'=>'Active'));
-		// echo "dashboard";
-		// print_r($data['list']);
+		
+		if(!empty($this->input->post())){
+			$short = md5(time());
+			$short = substr($short,-8);
+			// echo $short;
+			$check = $this->Cprez->default_select_row('shorturl','*',array('url'=>$this->input->post('url')));
+			if($check){
+				$data['error'] = "Url Already Exist...?";
+				$this->session->set_userdata($data);
+				// echo base_url(uri_string());
+				redirect(base_url(uri_string()));
+			}else{
+
+			}
+			if($this->input->post('shorturl')){
+				$short = $this->input->post('shorturl');
+			}
+			$this->Cprez->default_insert($table='shorturl',$data=array("url"=>$this->input->post('url'),"shorturl"=>$short));
+			// print_r($this->input->post());
+			redirect(base_url(uri_string()));
+		}
+
 		$this->load->view('common/header',$data);
 		$this->load->view('dashboard',$data);
 		$this->load->view('common/footer',$data);
+
+		$query['error']=FALSE;
+		$this->session->set_userdata($query);
 	}
 
-	public function shorturl($id=""){
-		echo "Short Test string ".$id;
+	public function shorturl($url){
+		$check = $this->Cprez->default_select_row('shorturl','*',array('shorturl'=>$url));
+		// print_r($check);
+		if($check){
+			$this->Cprez->default_update($table='shorturl',array('views'=>$check['views']+1),array('shorturl'=>$url));
+			redirect($check['url'],'location',301);
+			exit();
+		}
+		echo "string ".$url;
+		// redirect(base_url(uri_string()));
 		// redirect('http://localhost/php/shorturl3/home/test/abc','location',301);
 		// exit();
 	}

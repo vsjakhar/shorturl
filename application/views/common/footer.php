@@ -1,6 +1,6 @@
 	<footer class="alert-secondary">
 		<div class="container">
-			&copy; 2017-<?php echo date('Y'); ?> reserved by Shorturl.com
+			&copy; Copyright 2017-<?php echo date('Y'); ?> reserved by Shorturl.com
 		</div>
 	</footer>
 	<!-- Optional JavaScript -->

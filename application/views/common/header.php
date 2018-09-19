@@ -25,6 +25,7 @@
               <a class="nav-item nav-link" href="#">Features</a>
               <a class="nav-item nav-link" href="#">Pricing</a>
               <a class="nav-item nav-link" href="#">Signup</a>
+              <a class="nav-item nav-link" href="dashboard">Dashboard</a>
             </div>
           </div>
         </nav>
