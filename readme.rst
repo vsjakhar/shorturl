@@ -1,5 +1,3 @@
-# shorturl
-
 ###################
 What is CodeIgniter
 ###################
