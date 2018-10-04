@@ -53,6 +53,8 @@ $route['default_controller'] = 'home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
+$route['login'] = 'home/login';
+$route['signup'] = 'home/signup';
 $route['dashboard'] = 'home/dashboard';
 // $route['gallery/(:any)'] = 'home/gallery/$1';
 

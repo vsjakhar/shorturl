@@ -44,36 +44,40 @@ class Home extends CI_Controller {
 	}
 
 	public function dashboard(){
-		$data['error'] = "";
-		$data['list']= $this->Cprez->default_select_and('shorturl','*',array('status'=>'Active'));
-		
-		if(!empty($this->input->post())){
-			$short = md5(time());
-			$short = substr($short,-8);
-			// echo $short;
-			$check = $this->Cprez->default_select_row('shorturl','*',array('url'=>$this->input->post('url')));
-			if($check){
-				$data['error'] = "Url Already Exist...?";
-				$this->session->set_userdata($data);
-				// echo base_url(uri_string());
+		if($this->session->user){
+			$data['error'] = "";
+			$data['list']= $this->Cprez->default_select_and('shorturl','*',array('status'=>'Active'));
+			
+			if(!empty($this->input->post())){
+				$short = md5(time());
+				$short = substr($short,-8);
+				// echo $short;
+				$check = $this->Cprez->default_select_row('shorturl','*',array('url'=>$this->input->post('url')));
+				if($check){
+					$data['error'] = "Url Already Exist...?";
+					$this->session->set_userdata($data);
+					// echo base_url(uri_string());
+					redirect(base_url(uri_string()));
+				}else{
+
+				}
+				if($this->input->post('shorturl')){
+					$short = $this->input->post('shorturl');
+				}
+				$this->Cprez->default_insert($table='shorturl',$data=array("url"=>$this->input->post('url'),"shorturl"=>$short));
+				// print_r($this->input->post());
 				redirect(base_url(uri_string()));
-			}else{
+			}
 
-			}
-			if($this->input->post('shorturl')){
-				$short = $this->input->post('shorturl');
-			}
-			$this->Cprez->default_insert($table='shorturl',$data=array("url"=>$this->input->post('url'),"shorturl"=>$short));
-			// print_r($this->input->post());
-			redirect(base_url(uri_string()));
+			$this->load->view('common/header',$data);
+			$this->load->view('dashboard',$data);
+			$this->load->view('common/footer',$data);
+
+			$query['error']=FALSE;
+			$this->session->set_userdata($query);
+		}else{
+			redirect(base_url()."dashboard");
 		}
-
-		$this->load->view('common/header',$data);
-		$this->load->view('dashboard',$data);
-		$this->load->view('common/footer',$data);
-
-		$query['error']=FALSE;
-		$this->session->set_userdata($query);
 	}
 
 	public function shorturl($url){
@@ -97,79 +101,142 @@ class Home extends CI_Controller {
 	}
 
 	public function signup($id=""){
-		echo "Test string ".$id;
+		$data = "";
+		$this->load->view('common/header',$data);
+		$this->load->view('signup',$data);
+		$this->load->view('common/footer',$data);
 	}
 
-	public function student_login(){
-		/*$entity=$this->input->post('entity');
-		$pass=md5($this->input->post('password'));
-		$query = $this->Main_model->login($entity,$pass);
-		
-		if($query){
-			$query['students']=TRUE;
-			$this->session->set_userdata($query);
-			echo "sucess";			
-		}else{
-			echo "Invalid";
-			
-		}*/
-		if($this->session->students){	
+	public function login($id=""){
+		if($this->session->user){
 			redirect(base_url()."dashboard");
 		}else{
-			$result="";
-			$entity=$this->input->post('entity');
-			$pass=md5($this->input->post('password'));
-			$query = $this->Main_model->login($entity,$pass);
-			
 			$this->load->library('form_validation');
-			$this->form_validation->set_rules('entity', 'Mobile or Email', 'required');
-			$this->form_validation->set_rules('password', 'Password', 'required');
+			if($this->input->post()){
+				$email=$this->input->post('email');
+				$pass=md5($this->input->post('password'));
+				// $query = $this->Main_model->login($entity,$pass);
+				
+				$this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+				$this->form_validation->set_rules('password', 'Password', 'trim|required');
+				// print_r($this->input->post());
+				if($this->form_validation->run()){
+					// echo "Form Validated";
+					$this->form_validation->set_message('rule', 'Error Message');
+					$this->form_validation->set_message('is_unique', 'The %s is already taken');
+					$res = $this->Cprez->default_select_row('user','*',array('user_email'=>$email,'user_password'=>$pass));
+					if($res){
+						// print_r($res);
+						$res['user']=TRUE;
+						$this->session->set_userdata($res);
+						redirect(base_url().'dashboard'); die;
+					}else{
 
-			if($this->form_validation->run() == FALSE){
-				// Form Validation		
-			}else if ($query=="exist"){
-				$result['error'] = "You are already Logedin from other Computer.";
-			}else if(!empty($query)){
-				$query['students']=TRUE;
-				$this->session->set_userdata($query);
-				redirect(base_url().'dashboard'); die;
-			}else{
-				$result['error'] = "Invalid Credential, Please try Again.....!";
+					}
+					
+				}else{
+					// echo "Validation Error ".$this->form_validation->run();
+					// echo validation_errors();
+				}
 			}
-			//die(print_r($query));
-
-			$header["title"]="Login";
-			$header["menu"]="login";
-			$header["submenu"]="Login";
-			$this->load->view('common/header',$header);
-			$this->load->view('pages/login',$result);	
-			$this->load->view('common/footer-about');
-			$this->load->view('common/footer');
+			$data = "";
+			$this->load->view('common/header',$data);
+			$this->load->view('login',$data);
+			$this->load->view('common/footer',$data);
 		}
-
 	}
 
-	public function login_now(){
-		$entity=$this->input->post('entity');
-		$pass=md5($this->input->post('password'));
-		$query = $this->Main_model->login($entity,$pass);
-		if($query){
-			$query['students']=TRUE;
-			$this->session->set_userdata($query);
-			echo "sucess";			
-		}else{
-			echo "Invalid";
+	// public function logedin(){
+	// 	if($this->session->students){
+	// 		redirect(base_url()."dashboard");
+	// 	}else{
+	// 		$email=$this->input->post('email');
+	// 		$pass=md5($this->input->post('password'));
+	// 		// $query = $this->Main_model->login($entity,$pass);
 			
-		}
+	// 		$this->load->library('form_validation');
+	// 		$this->form_validation->set_rules('email', 'Email', 'required');
+	// 		$this->form_validation->set_rules('password', 'Password', 'required');
+	// 		print_r($this->input->post());
+	// 		if($this->form_validation->run()){
+	// 			echo "Form Validated";		
+	// 		}else{
+	// 			echo "Validation Error ".$this->form_validation->run();
+	// 			echo validation_errors();
+	// 		}
+	// 	}
+	// }
 
-	}
+	// public function student_login(){
+	// 	/*$entity=$this->input->post('entity');
+	// 	$pass=md5($this->input->post('password'));
+	// 	$query = $this->Main_model->login($entity,$pass);
+		
+	// 	if($query){
+	// 		$query['students']=TRUE;
+	// 		$this->session->set_userdata($query);
+	// 		echo "sucess";			
+	// 	}else{
+	// 		echo "Invalid";
+			
+	// 	}*/
+	// 	if($this->session->students){	
+	// 		redirect(base_url()."dashboard");
+	// 	}else{
+	// 		$result="";
+	// 		$entity=$this->input->post('entity');
+	// 		$pass=md5($this->input->post('password'));
+	// 		$query = $this->Main_model->login($entity,$pass);
+			
+	// 		$this->load->library('form_validation');
+	// 		$this->form_validation->set_rules('entity', 'Mobile or Email', 'required');
+	// 		$this->form_validation->set_rules('password', 'Password', 'required');
 
-	public function update_login(){
-		$this->Cprez->default_update("students",array("students_last_login"=>time()), array("students_id"=>$this->session->students_id) );
-	}
+	// 		if($this->form_validation->run() == FALSE){
+	// 			// Form Validation		
+	// 		}else if ($query=="exist"){
+	// 			$result['error'] = "You are already Logedin from other Computer.";
+	// 		}else if(!empty($query)){
+	// 			$query['students']=TRUE;
+	// 			$this->session->set_userdata($query);
+	// 			redirect(base_url().'dashboard'); die;
+	// 		}else{
+	// 			$result['error'] = "Invalid Credential, Please try Again.....!";
+	// 		}
+	// 		//die(print_r($query));
+
+	// 		$header["title"]="Login";
+	// 		$header["menu"]="login";
+	// 		$header["submenu"]="Login";
+	// 		$this->load->view('common/header',$header);
+	// 		$this->load->view('pages/login',$result);	
+	// 		$this->load->view('common/footer-about');
+	// 		$this->load->view('common/footer');
+	// 	}
+
+	// }
+
+	// public function login_now(){
+	// 	$entity=$this->input->post('entity');
+	// 	$pass=md5($this->input->post('password'));
+	// 	$query = $this->Main_model->login($entity,$pass);
+	// 	if($query){
+	// 		$query['students']=TRUE;
+	// 		$this->session->set_userdata($query);
+	// 		echo "sucess";			
+	// 	}else{
+	// 		echo "Invalid";
+			
+	// 	}
+
+	// }
+
+	// public function update_login(){
+	// 	$this->Cprez->default_update("students",array("students_last_login"=>time()), array("students_id"=>$this->session->students_id) );
+	// }
 
 	public function logout(){
-		$this->Cprez->default_update("students",array("students_last_login"=>(time()-300)), array("students_id"=>$this->session->students_id) );
+		// $this->Cprez->default_update("students",array("students_last_login"=>(time()-300)), array("students_id"=>$this->session->students_id) );
 		$this->session->sess_destroy();
 		redirect(base_url().'login');
 	}
